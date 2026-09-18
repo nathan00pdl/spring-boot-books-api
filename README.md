@@ -1,44 +1,74 @@
-# Books API with Spring Boot 
+# Books API — Spring Boot
 
-### License
+[![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/17/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.10-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![License](https://img.shields.io/github/license/nathan00pdl/spring-boot-books-api)](LICENSE)
 
-This project is licensed under **MIT** license. See the `LICENSE` file for more informations. 
+A REST API that serves a list of programming books read from a local JSON file.
 
+This was my first API built from scratch, following [this video](https://www.youtube.com/watch?v=MuF_jkfdqUo) by Fernanda Kipper. In the video the book data comes from AWS; I chose to keep it local, so the project stays about the API itself — the layers, the dependency injection and the JSON serialization — with nothing else to set up.
 
-[![NPM](https://img.shields.io/npm/l/react)](https://github.com/nathan00pdl/api-test/blob/main/LICENSE) 
+## Tech stack
 
-# About the Project
-Thsi is a basic project for pesonal study purposes regarding the operation and, mainly, the implementation of an **API** (Application Programming Interface) from its beginning.
+- **Java 17**
+- **Spring Boot 3.2.10** — Spring Web
+- **Jackson** for reading the JSON into Java objects
+- **Lombok** for the constructors
+- **Maven**, through the Maven Wrapper (`./mvnw`)
 
-Initialy, I followed the construction of this project based on the video **https://www.youtube.com/watch?v=MuF_jkfdqUo** by developer **Fernanda Kipper**, however the JSON request containing the book information was made by cloud services from **AWS**, so I chose to do something simpler, with local data access.
+## How it works
 
-In short, the API returns a list of books, where the data for these books is derived from a JSON file stored in a local folder. Instead of fetching information from an external API or cloud service, the application reads the local JSON file, converts it to list of java objects, and make this data available through an API endpoint.
+| Class | Responsibility |
+|---|---|
+| `Book` | The domain object: title, author, area, cover image, publisher, release date, year and ISBN |
+| `BookService` | Reads `books.json` from the classpath and turns it into a `List<Book>` with Jackson's `ObjectMapper` |
+| `BookController` | Exposes the endpoint, receives the service through constructor injection, and chooses the response status |
 
-# Project Structure
+The data lives in `src/main/resources/books.json`. Reading it from the classpath is what makes the project run anywhere, including from the packaged jar.
 
-## Layered implementation
-**Book**
-- Model or domain to represent the data of a workbook.
+## Endpoint
 
-**BookController**
-- Acts as the API entry point for book-related request.
-- Defines an endpoint that, when accessed, calls the service to obtain the list of books and returns the data in JSON format.
-- Utilizes DI (Dependency Injection) and HTTP response handling best practies.
+| Method | Path | Response |
+|---|---|---|
+| `GET` | `/api/books` | **200** with the list of books · **204** when the list is empty |
 
-**BookService**
-- Service to get a list of books from a JSON file located on the local file system.  
-- Uses the Jackson library's ObjectMapper to deserialize JSON content into a java objects, which will be returned by the API. 
-  
+```bash
+curl http://localhost:8080/api/books
+```
 
-## Web requests
-- **Insomnia**.
-- **Thunder Cient** extension in the vscode.
-- Testing requests with **GET method**.
+```json
+[
+  {
+    "titulo": "Clean Code",
+    "autor": "Robert C. Martin",
+    "area": "Desenvolvimento de Software",
+    "imagem": "https://images-na.ssl-images-amazon.com/images/I/41xShlnTZTL._SX374_BO1,204,203,200_.jpg",
+    "editora": "Prentice Hall",
+    "data_de_lancamento": "11 de agosto de 2008",
+    "ano_de_publicacao": "2008",
+    "isbn": "978-0132350884"
+  }
+]
+```
 
+The field names are in Portuguese because they mirror the JSON file as it is.
 
-### Contact with me
+## Running locally
 
-Nathan Paiva de Lacerda
+Requirements: **Java 17**. Maven does not need to be installed.
 
-https://www.linkedin.com/in/nathan-paiva-636336236
+```bash
+git clone https://github.com/nathan00pdl/spring-boot-books-api.git
+cd spring-boot-books-api
+./mvnw spring-boot:run
+```
 
+The API starts on `http://localhost:8080`. To add or change books, edit `src/main/resources/books.json` and restart.
+
+## License
+
+Licensed under the [MIT License](LICENSE).
+
+## Contact
+
+Nathan Paiva de Lacerda — [LinkedIn](https://www.linkedin.com/in/nathan-paiva-636336236)
